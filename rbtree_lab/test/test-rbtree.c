@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <rbtree.h>
+#include "rbtree.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -386,7 +386,8 @@ void test_find_erase(rbtree *t, const key_t *arr, const size_t n)
 
 void test_find_erase_fixed()
 {
-  const key_t arr[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 24, 36, 990, 25};
+  const key_t arr[] = {
+      10, 5, 8, 34, 67, 23, 156, 24, 2, 12, 36, 990, 25};
   const size_t n = sizeof(arr) / sizeof(arr[0]);
   rbtree *t = new_rbtree();
   assert(t != NULL);
@@ -398,7 +399,7 @@ void test_find_erase_fixed()
 
 void test_find_erase_rand(const size_t n, const unsigned int seed)
 {
-  srand(seed);
+  // srand(seed);
   rbtree *t = new_rbtree();
   key_t *arr = calloc(n, sizeof(key_t));
   for (int i = 0; i < n; i++)

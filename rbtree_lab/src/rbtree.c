@@ -45,9 +45,10 @@ static void transplant(rbtree *t, node_t *u, node_t *v)
   else if (u == u->parent->left) // if u is left child
     u->parent->left = v;         // set left child to v
   else
-    u->parent->right = v;  // set right child to v
-  if (v != t->nil)         // if v is not sentinel
-    v->parent = u->parent; // update v's parent
+    u->parent->right = v; // set right child to v
+                          // if (v != t->nil)         // if v is not sentinel
+
+  v->parent = u->parent; // update v's parent
 }
 
 /* Purpose: Find the minimum node in subtree starting at `start`. */
@@ -57,20 +58,6 @@ node_t *subtree_min(rbtree *t, node_t *start)
   while (curr != t->nil && curr->left != t->nil) // traverse left while possible
     curr = curr->left;                           // move left
   return curr;                                   // return min node (could be nil)
-}
-
-/* Helper: recursively dump nodes for debugging (file-scope, avoids nested functions) */
-static void dump_node(const rbtree *t, node_t *n, int depth)
-{
-  if (n == t->nil)
-    return;
-  for (int i = 0; i < depth; ++i)
-    fputc(' ', stderr);
-  fprintf(stderr, "node %p key=%d color=%s parent=%p left=%p right=%p\n",
-          (void *)n, n->key, n->color == RBTREE_RED ? "R" : "B",
-          (void *)n->parent, (void *)n->left, (void *)n->right);
-  dump_node(t, n->left, depth + 2);
-  dump_node(t, n->right, depth + 2);
 }
 
 /* Purpose: Left-rotate the subtree rooted at x. */
@@ -205,16 +192,6 @@ node_t *rbtree_find(const rbtree *t, const key_t key)
       curr = curr->left; // move left
     else
       curr = curr->right; // move right
-  }
-  /* If the tree is non-empty and a lookup fails where it might be expected
-     to succeed by the test harness, dump the whole tree structure to
-     stderr to capture pointer/parent/child relationships for debugging. */
-  if (t->root != t->nil)
-  {
-    fprintf(stderr, "DUMP rbtree_find: not found key=%d t=%p root=%p nil=%p\n", key, (const void *)t, (const void *)t->root, (const void *)t->nil);
-  /* Dump the whole tree using file-scope helper */
-  dump_node(t, t->root, 0);
-    fflush(stderr);
   }
   return NULL; // not found: tests expect NULL
 }
