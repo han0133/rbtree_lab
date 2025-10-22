@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug test-rbtree (CodeLLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/test/test-rbtree",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "terminal": "integrated",
+      "stopOnEntry": false,
+      "preLaunchTask": "build-test",
+      "sourceMap": {},
+      "initCommands": [
+        "breakpoint set --name rbtree_erase",
+        "breakpoint set --name delete_rbtree",
+        "breakpoint set --name free_subtree",
+        "breakpoint set --name new_node"
+      ],
+      "env": {
+        "ASAN_OPTIONS": "detect_leaks=0:verbosity=1:halt_on_error=1"
+      }
+    }
+  ]
+}

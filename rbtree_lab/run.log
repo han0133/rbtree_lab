@@ -1,0 +1,64 @@
+cc -I ../src -Wall -g -DSENTINEL -fsanitize=address   -c -o test-rbtree.o test-rbtree.c
+/Library/Developer/CommandLineTools/usr/bin/make -C ../src rbtree.o
+cc -Wall -g   -c -o rbtree.o rbtree.c
+cc -fsanitize=address  test-rbtree.o ../src/rbtree.o   -o test-rbtree
+./test-rbtree
+enter test_find_erase_fixed (start)
+progress: reinsert+erase i=0 key=10
+progress: reinsert+erase i=1 key=5
+progress: reinsert+erase i=2 key=8
+progress: reinsert+erase i=3 key=34
+progress: reinsert+erase i=4 key=67
+progress: reinsert+erase i=5 key=23
+progress: reinsert+erase i=6 key=156
+progress: reinsert+erase i=7 key=24
+progress: reinsert+erase i=8 key=2
+progress: reinsert+erase i=9 key=12
+progress: reinsert+erase i=10 key=24
+progress: reinsert+erase i=11 key=36
+progress: reinsert+erase i=12 key=990
+progress: reinsert+erase i=13 key=25
+enter test_find_erase_fixed
+=================================================================
+==12733==ERROR: AddressSanitizer: attempting double-free on 0x603000001d50 in thread T0:
+    #0 0x000100ee9400 in free+0x7c (libclang_rt.asan_osx_dynamic.dylib:arm64e+0x3d400)
+    #1 0x0001008d8e1c in rbtree_erase rbtree.c:71
+    #2 0x0001008d8bfc in delete_rbtree rbtree.c:22
+    #3 0x0001008d88f8 in test_find_erase_fixed test-rbtree.c:412
+    #4 0x0001008d8ae4 in main test-rbtree.c:439
+    #5 0x00018a32dd50 in start+0x1c0c (dyld:arm64e+0x3d50)
+
+0x603000001d50 is located 0 bytes inside of 32-byte region [0x603000001d50,0x603000001d70)
+freed by thread T0 here:
+    #0 0x000100ee930c in malloc+0x78 (libclang_rt.asan_osx_dynamic.dylib:arm64e+0x3d30c)
+    #1 0x00018a501794 in _malloc_type_malloc_outlined+0x60 (libsystem_malloc.dylib:arm64e+0x1e794)
+    #2 0x00018a2c7de0 in objc::DenseMap<DisguisedPtr<objc_class>, objc::category_list, objc::DenseMapValueInfo<objc::category_list>, objc::DenseMapInfo<DisguisedPtr<objc_class>>, objc::detail::DenseMapPair<DisguisedPtr<objc_class>, objc::category_list>>::init(unsigned int)+0x5c (libobjc.A.dylib:arm64e+0x27de0)
+    #3 0x00018a2a19a4 in _objc_init+0x598 (libobjc.A.dylib:arm64e+0x19a4)
+    #4 0x00018a5318f8 in _os_object_init+0x14 (libdispatch.dylib:arm64e+0x28f8)
+    #5 0x00018a566c28 in libdispatch_init+0x1dc (libdispatch.dylib:arm64e+0x37c28)
+    #6 0x000199ff634c in libSystem_initializer+0xf0 (libSystem.B.dylib:arm64e+0x134c)
+    #7 0x00018a34acac in invocation function for block in dyld4::Loader::findAndRunAllInitializers(dyld4::RuntimeState&) const+0x1b8 (dyld:arm64e+0x20cac)
+    #8 0x00018a38872c in invocation function for block in dyld3::MachOAnalyzer::forEachInitializer(Diagnostics&, dyld3::MachOAnalyzer::VMAddrConverter const&, void (unsigned int) block_pointer, void const*) const+0x140 (dyld:arm64e+0x5e72c)
+    #9 0x00018a3a753c in invocation function for block in mach_o::Header::forEachSection(void (mach_o::Header::SectionInfo const&, bool&) block_pointer) const+0x134 (dyld:arm64e+0x7d53c)
+    #10 0x00018a3a4160 in mach_o::Header::forEachLoadCommand(void (load_command const*, bool&) block_pointer) const+0xcc (dyld:arm64e+0x7a160)
+    #11 0x00018a3a59f8 in mach_o::Header::forEachSection(void (mach_o::Header::SectionInfo const&, bool&) block_pointer) const+0x78 (dyld:arm64e+0x7b9f8)
+    #12 0x00018a38821c in dyld3::MachOAnalyzer::forEachInitializer(Diagnostics&, dyld3::MachOAnalyzer::VMAddrConverter const&, void (unsigned int) block_pointer, void const*) const+0x200 (dyld:arm64e+0x5e21c)
+    #13 0x00018a34aa64 in dyld4::Loader::findAndRunAllInitializers(dyld4::RuntimeState&) const+0xa8 (dyld:arm64e+0x20a64)
+    #14 0x00018a3566a4 in dyld4::PrebuiltLoader::runInitializers(dyld4::RuntimeState&) const+0x28 (dyld:arm64e+0x2c6a4)
+    #15 0x00018a36cf10 in dyld4::APIs::runAllInitializersForMain()+0x54 (dyld:arm64e+0x42f10)
+    #16 0x00018a32f154 in dyld4::prepare(dyld4::APIs&, mach_o::Header const*)+0xc24 (dyld:arm64e+0x5154)
+    #17 0x00018a32dd00 in start+0x1bbc (dyld:arm64e+0x3d00)
+
+previously allocated by thread T0 here:
+    #0 0x000100ee95fc in calloc+0x80 (libclang_rt.asan_osx_dynamic.dylib:arm64e+0x3d5fc)
+    #1 0x0001008d93b4 in new_node rbtree.c:188
+    #2 0x0001008d9368 in rbtree_insert rbtree.c:178
+    #3 0x0001008d7e70 in test_find_erase test-rbtree.c:364
+    #4 0x0001008d88b4 in test_find_erase_fixed test-rbtree.c:409
+    #5 0x0001008d8ae4 in main test-rbtree.c:439
+    #6 0x00018a32dd50 in start+0x1c0c (dyld:arm64e+0x3d50)
+
+SUMMARY: AddressSanitizer: double-free rbtree.c:71 in rbtree_erase
+==12733==ABORTING
+🚩 테스트가 시작되었습니다. 
+make: *** [test] Abort trap: 6
